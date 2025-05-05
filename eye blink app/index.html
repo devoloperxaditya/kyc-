@@ -1,0 +1,44 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Eye Blink Generator</title>
+</head>
+<body>
+  <h1>Upload a Face Image</h1>
+  <input type="file" id="imgInput">
+  <button onclick="sendImage()">Blink & Download</button>
+  <br><br>
+  <video id="videoResult" controls style="display:none; width:300px;"></video>
+
+  <script>
+    function sendImage() {
+      const input = document.getElementById("imgInput");
+      const file = input.files[0];
+      if (!file) return alert("Upload an image first!");
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      fetch("/blink", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const video = document.getElementById("videoResult");
+        video.src = url;
+        video.style.display = "block";
+
+        // download link
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "eye_blink.mp4";
+        a.click();
+      });
+    }
+  </script>
+</body>
+</html>
